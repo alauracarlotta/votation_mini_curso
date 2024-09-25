@@ -1,5 +1,14 @@
 # Dir
 /.venv
+/venv
+/env
+/ENV
+/env.bak
+/venv.bak
+/__pycache__
 
 # File
+.env
 .venv
+__pycache__
+db.*
