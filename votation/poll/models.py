@@ -20,5 +20,3 @@ class Choice(models.Model):
     
     def __str__(self):
         return self.choice_text
-    
-    # WIP: Video 5 - 10:34
