@@ -181,11 +181,11 @@ Assim que criado o app, o django cria os seguintes arquivos (recursos do framewo
     
     3. Podemos verificar se o mesmo deu certo, subindo o servidor. Neste caso ainda ocorrerá um erro conforme a imagem a seguir:  
 
-![erro url](assets/images/erro_url.png)
+![Erro URL](assets/images/erro_url.png)
 
     Precisamos acessar a página criada que está em /poll (conforme url criada)
 
-![url com sucesso](assets/images/url_com_sucesso.png)
+![URL com Sucesso](assets/images/url_com_sucesso.png)
 
 * PASSO 2:
 
@@ -228,7 +228,7 @@ Assim que criado o app, o django cria os seguintes arquivos (recursos do framewo
 
     PODEMOS ABRIR O DB BROWSER FOR SQLITE E ENCONTRAREMOS O BANCO INICIALIZADO, com as tabelas criadas e tudo mais:
 
-![db inicializado](assets/images/db_inicializado.png)
+![DB Inicializado](assets/images/db_inicializado.png)
 
 => file __models.py.py__ (do app)
 
@@ -298,10 +298,10 @@ Assim que criado o app, o django cria os seguintes arquivos (recursos do framewo
             Applying poll.0001_initial... OK
         
         Em nosso db podemos verificar:
-![db tabela adicionada](assets/images/db_tabela_adicionada.png)
-![db verificando tabela](assets/images/db_verificando_tabela.png)
-![db verificando tabela questions](assets/images/db_verificando_tabela_questions.png)
-![db verificando tabela choice](assets/images/db_verificando_tabela_choice.png)
+![DB Tabela adicionada](assets/images/db_tabela_adicionada.png)
+![DB Verificando Tabela](assets/images/db_verificando_tabela.png)
+![DB Verificando Tabela Questions](assets/images/db_verificando_tabela_questions.png)
+![DB Verificando Tabela Choice](assets/images/db_verificando_tabela_choice.png)
 
 ### CRIANDO NOSSAS PERGUNTAS
 
@@ -358,7 +358,7 @@ Assim que criado o app, o django cria os seguintes arquivos (recursos do framewo
     Out: <QuerySet [<Questions: Você é feliz?>]>
 
     Vide imagem:
-    ![db pegunta adicionada](assets/images/db_pergunta_adicionada.png)
+    ![DB Pegunta Adicionada](assets/images/db_pergunta_adicionada.png)
 
 3. Para pegar as perguntas mais recentes:
     Adiciono a linha referente ao tempo:
@@ -385,5 +385,56 @@ Assim que criado o app, o django cria os seguintes arquivos (recursos do framewo
             def __str__(self):
                 return self.choice_text
 
-4. Para adionar as alternativas:
-    WIP: Video 5 - 10:34
+### CRIANDO NOSSAS ALTERNATIVAS
+
+    => File __models.py__ (do app)
+    Na class Choice, temos:
+    * question (ForeignKey => Atrela as opções a pergunta)
+    * choice_text (Quais são os textos das alternativas)
+    * votes (computabilidade dos votos por alternativa)
+
+    No terminal, com shell:
+    In: from poll.models import Questions, Choice
+
+    In: Questions.objects.all()
+    Out: <QuerySet [<Questions: Você é feliz?>]>
+
+    In: q = Questions.objects.get(id=1)     => Salve em 'q' a pergunta de id 1
+    In: print(q)
+    Out: <Questions: Você é feliz?>
+
+    In: q.choice_set.all()
+    Out: <QuerySet []>
+
+    In: q.choice_set.create(choice_text='Com certeza', votes=0)
+    >>> Crie em 'q' (sob a pergunta já atrelada) a alternativa com texto 'x' e qtde de votos 'n'
+    Out: <Choice: Com certeza>
+
+    In: q.choice_set.create(choice_text='Não muito...', votes=0)
+    Out: <Choice: Não muito...>
+
+    In: q.choice_set.all()      => Todas as alternativas adicionadas
+    Out: <QuerySet [<Choice: Com certeza>, <Choice: Não muito...>]>
+
+## O TAL DO 'ADMIN'
+
+1. Criamos um usuario administrador:
+    In: `python manage.py createsuperuser`
+    Out:
+        Usuário (leave blank to use 'laura-carlotta'): admin
+        Endereço de email: [alauracarlotta@gmail.com]
+        Password:  
+        Password (again):  
+        Esta senha é muito curta. Ela precisa conter pelo menos 8 caracteres.
+        Bypass password validation and create user anyway? [y/N]: y
+        Superuser created successfully.
+
+    In: `python manage.py runserver`
+
+    In: [http://127.0.0.1:8000/admin/] teremos o seguinte:
+
+    ![Tela de Login do Admin](assets/images/admin-login.png)
+
+    >>> Depois de logado, nosso sistema de administrador será da seguinte forma:
+
+    ![Sistema do Admin](assets/images/admin-sistema.png)
