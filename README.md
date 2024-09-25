@@ -438,3 +438,13 @@ Assim que criado o app, o django cria os seguintes arquivos (recursos do framewo
     >>> Depois de logado, nosso sistema de administrador será da seguinte forma:
 
     ![Sistema do Admin](assets/images/admin-sistema.png)
+
+2. Para adicionar nossas perguntas e respostas no admin também, faremos o seguinte:
+    => File __admin.py__
+        Adicionamos:
+            `from django.contrib import admin`
+            `from .models import Questions`
+
+            `admin.site.register(Questions)`
+
+## CRIANDO NOVAS VIEW
