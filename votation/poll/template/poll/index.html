@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquete - poll</title>
+</head>
+<body>
+    <!-- Olha lá na lista que a gente criou -->
+    {% if latest_question_list %}
+        <!-- para cada item da lista -->
+        <ul>
+            {% for question in latest_question_list %}
+            <!-- Crie o item -->
+                <li>
+                    <a href="{% url 'poll:vote' question.id %}">
+                        {{ question.question_text }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    <!-- Se não, mostre -->
+    {% else %}
+        <p>No poll are avaliable.</p>
+    
+    {% endif %}
+
+</body>
+</html>
