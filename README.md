@@ -448,3 +448,78 @@ Assim que criado o app, o django cria os seguintes arquivos (recursos do framewo
             `admin.site.register(Questions)`
 
 ## CRIANDO NOVAS VIEW
+
+Vamos criar:
+
+* Lista com todas as perguntas
+* Sobre cada pergunta abrirá uma página com as alternativas
+* Resultados das votações
+
+1. Criamos todas as views que queremos:
+
+    def index(request):
+        return HttpResponse('Olá mundo!')
+
+    def detail(request, question_id):
+        return HttpResponse('Essa é a pergunta de número %s' %question_id)
+
+    def results(request, question_id):
+        return HttpResponse('Esses são os resultados da pergunta de número %s' %question_id)
+
+    def vote(request, question_id):
+        return HttpResponse('Você está votando na questão de número %s' %question_id)
+
+2. Especificando cada uma:
+    def index(request):
+        latest_question_list = Questions.objects.order_by '-pub_date' [:5]
+            # Ordena as últimas 5 perguntas com base na data de publicação;
+        context = {'latest_question_list': latest_question_list}
+            # monta a variavel em objeto para como vai aparecer lá na página;
+
+        return render(request, 'poll/index.html', context) 
+            # 'render' => 'renderiza' a página pra mim baseada em uma request na página poll/index.html (que será criada) e mostra o valor 'context'.
+
+3. Para criar um template em django é necessário criá-lo da seguinte forma:
+    => No Dir do app:
+    * Cria a pasta 'template'
+    * Dentro de 'template' cria a pasta com o nome do app
+    * E dentro da pasta do app, cria o arquivo com nome de 'index.html'
+
+    E construimos um html da seguinte forma:
+
+    `<!DOCTYPE html>`
+    `<html lang="pt-br">`
+    `<head>`
+        `<meta charset="UTF-8">`
+        `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+        `<title>Enquete - poll</title>`
+    `</head>`
+    `<body>`
+        <!-- Olha lá na lista que a gente criou -->
+        `{% if latest_question_list %}`
+            <!-- para cada item da lista -->
+            `<ul>`
+                `{% for question in latest_question_list %}`
+                <!-- Crie o item -->
+                    `<li>`
+                        `<a href="{% url 'poll:vote' question_id %}">`
+                            `{{ question.question_id}}`
+                        `</a>`
+                    `</li>`
+                `{% endfor %}`
+            `</ul>`
+        <!-- Se não, mostre -->
+        `{% else %}`
+            `<p>No poll are avaliable.</p>`
+        `{% endif %}`
+    `</body>`
+    `</html>`
+
+4. No file __urls.py__, em urlpatterns adcionamos:
+    `path('<int:question_id>/results/', views.results, name='results'),`
+    `path('<int:question_id>/vote', views.vote, name='vote')`
+
+5. Costruindo as outras páginas:
+
+TODO:
+WIP - documentar
