@@ -516,10 +516,116 @@ Vamos criar:
     `</html>`
 
 4. No file __urls.py__, em urlpatterns adcionamos:
-    `path('<int:question_id>/results/', views.results, name='results'),`
-    `path('<int:question_id>/vote', views.vote, name='vote')`
+    `app_name = 'poll'`
+    `urlpatterns = [`
+        `path('', views.index, name='index'),`
+        `path('<int:question_id>/results/', views.results, name='results'),`
+        `path('<int:question_id>/vote/', views.vote, name='vote'),`
+    `]`
+
+    No file __views__.py
+
+    `def index(request):`
+        `latest_question_list = Questions.objects.order_by('-pub_date'):5`
+        `context = {'latest_question_list': latest_question_list}`
+        `return render(request, 'poll/index.html', context)`
 
 5. Costruindo as outras páginas:
 
-TODO:
-WIP - documentar
+=> vote.html
+
+`<!DOCTYPE html>`
+`<html lang="en">`
+`<head>`
+    `<meta charset="UTF-8">`
+    `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+    `<title>Vote na Enquete</title>`
+`</head>`
+`<body>`
+    `<form action="{% url 'poll:vote' question.id %}" method="post">`
+        `{% csrf_token %}`
+        `<fieldset>`
+            `<legend>`
+                `<h1>{{ question.question_text }}</h1>`
+            `</legend>`
+            `{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}`
+            `{% for choice in question.choice_set.all %}`
+                `<input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">`
+                `<label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>`
+            `{% endfor %}`
+        `</fieldset>`
+        `<input type="submit" value="Vote">`
+    `</form>`
+`</body>`
+`</html>`
+
+=> No file __views__.py
+
+`def vote(request, question_id):`
+    `question = get_object_or_404(Questions, pk=question_id)`
+    `try:`
+        `selected_choice = question.choice_set.get(pk=request.POST['choice'])`
+    `except KeyError:`
+        `return render(request, 'poll/vote.html',{`
+            `'question': question,`
+            `'error_message': "You didn't select a choice"`
+        `})`
+    `else:`
+        `selected_choice.votes += 1`
+        `selected_choice.save()`
+        `return HttpResponseRedirect(reverse('poll:results', args=(question.id,)))`
+
+=> results.html
+
+`<!DOCTYPE html>`
+`<html lang="en">`
+`<head>`
+    `<meta charset="UTF-8">`
+    `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+    `<title>Resultado da Enquete - results</title>`
+`</head>`
+`<body>`
+    `<h1>{{ question.question_text }}</h1>`
+    `<ul>`
+        `{% for choice in question.choice_set.all %}`
+            `<li>`
+                `{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}`
+            `</li>`
+        `{% endfor %}`
+    `</ul>`
+    `<a href="{% url 'poll:vote' question.id %}">Vote again? </a>`
+    `<a href="{% url 'poll:index' %}">See other poll?</a>`
+`</body>`
+`</html>`
+
+=> No file __views__.py
+
+`def results(request, question_id):`
+    `question = Questions(pk=question_id) # pk = primary key`
+    `return render(request, 'poll/results.html', {'question': question})`
+
+## Plus Well no admin
+
+=> File __admin__.py
+
+`from django.contrib import admin`
+`from .models import Questions, Choice`
+
+`class ChoiceTabularInline(admin.TabularInline):`
+    `model = Choice`
+    `extra = 0`
+
+`@admin.register(Questions)`
+`class QuestionAdmin(admin.ModelAdmin):`
+    `inlines = [ChoiceTabularInline]`
+
+    => Criamos de forma tabular a ligação no admin de perguntas/alternativas
+
+## Plus Well para debug
+
+pprint => Ajuda na identação de um file .json, por exemplo.
+logger
+import logging
+
+logger = logging.getLogger(__name__)
+    => Formas de debuggar o código.
