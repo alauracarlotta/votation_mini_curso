@@ -2,15 +2,20 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .models import Questions
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 # o index é comumente a nomeação da página inicial
 
 
 def index(request):
+    logger.info('começando a request')
     # return HttpResponse('Olá mundo!')
     latest_question_list = Questions.objects.order_by('-pub_date')[:5] # Ordena as últimas 5 perguntas com base na data de publicação;
     context = {'latest_question_list': latest_question_list} # monta a variavel em objeto para como vai aparecer lá na página;
+    print(f'aaaaaaaaaaaaaaaaaaaaa request | {context}')
     return render(request, 'poll/index.html', context) # 'render' => 'renderiza' a página pra mim baseada em uma request na página poll/index.html (que será criada) e mostra o valor 'context'.
 
 
